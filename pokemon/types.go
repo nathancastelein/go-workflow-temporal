@@ -32,3 +32,19 @@ type TournamentResult struct {
 	Bracket  [][]string // rounds of winners
 	Champion string
 }
+
+// JourneyProgress represents the current state of a trainer's Pokemon journey.
+type JourneyProgress struct {
+	TrainerName     string
+	Encounters      int
+	CapturedPokemon []Pokemon
+	CurrentStatus   string // "exploring", "encountering", "capturing", "completed"
+}
+
+// ExpeditionResult represents the result of a capture expedition.
+type ExpeditionResult struct {
+	TrainerName string
+	Pokemon     Pokemon
+	Region      string
+	Success     bool
+}

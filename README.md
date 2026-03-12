@@ -41,6 +41,32 @@ go run ./exercises/ex01_encounter/worker/
 temporal workflow start --task-queue pokemon --type WildEncounterWorkflow
 ```
 
+## Discovery Exercise
+
+Before diving into Temporal, explore two different workflow approaches:
+
+```bash
+# Run Approach A
+cd discovery/approach-a && go run .
+
+# Run Approach B
+cd discovery/approach-b && go run .
+```
+
+Compare how each program implements the same capture workflow differently.
+
+## HelloWorld Example
+
+A complete Temporal HelloWorld to run after setting up Temporal:
+
+```bash
+# Terminal 1: Start the worker
+go run ./examples/helloworld/worker/
+
+# Terminal 2: Run the starter
+go run ./examples/helloworld/starter/
+```
+
 ## Exercises
 
 | # | Name | Concepts |
@@ -57,8 +83,17 @@ temporal workflow start --task-queue pokemon --type WildEncounterWorkflow
 ## Project Structure
 
 ```
-pokemon-temporal/
+go-workflow-temporal/
 ├── pokemon/          # Shared domain types and data (read-only)
+├── discovery/        # Discovery exercise: two workflow approaches
+│   ├── approach-a/   # Approach A — run with: go run .
+│   └── approach-b/   # Approach B — run with: go run .
+├── examples/         # Provided examples
+│   └── helloworld/   # HelloWorld Temporal workflow
+│       ├── activities.go
+│       ├── workflow.go
+│       ├── worker/   # Start with: go run .
+│       └── starter/  # Start with: go run .
 ├── exercises/        # Exercise stubs — implement these!
 │   └── exNN_name/
 │       ├── README.md
