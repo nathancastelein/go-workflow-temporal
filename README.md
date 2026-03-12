@@ -1,0 +1,70 @@
+# Pokemon Temporal Training Workshop
+
+A hands-on workshop to learn [Temporal](https://temporal.io) with Go, using a Pokemon theme.
+
+## Prerequisites
+
+- **Go 1.22+**: [Install Go](https://go.dev/dl/)
+- **Temporal CLI**: [Install Temporal CLI](https://docs.temporal.io/cli#install)
+
+## Getting Started
+
+### 1. Start the Temporal dev server
+
+```bash
+temporal server start-dev
+```
+
+This starts a local Temporal server with a Web UI at http://localhost:8233.
+
+### 2. Run an exercise
+
+Each exercise is in `exercises/exNN_name/`. Open the `README.md` in the exercise folder for instructions.
+
+### 3. Run tests to validate your implementation
+
+```bash
+# Test your implementation
+go test ./exercises/ex01_encounter/...
+
+# Check the solution
+go test ./solutions/ex01_encounter/...
+```
+
+### 4. Run the worker (for exercises with a worker)
+
+```bash
+# Start the worker
+go run ./exercises/ex01_encounter/worker/
+
+# In another terminal, use the Temporal CLI to start a workflow
+temporal workflow start --task-queue pokemon --type WildEncounterWorkflow
+```
+
+## Exercises
+
+| # | Name | Concepts |
+|---|------|----------|
+| 1 | Tall Grass Encounter | Workflow, Activity, Worker |
+| 2 | I Choose You! | Multiple activities, Data passing |
+| 3 | It Dodged! | Determinism |
+| 4 | The Pokeball Missed! | Error handling, Retries, Timeouts |
+| 5 | Testing Your Pokemon | Temporal test framework |
+| 6 | Evolution Chamber | Signals, Timers, Selectors |
+| 7 | Team Rocket is Watching | Interceptors |
+| 8 | Pokemon League Tournament | Child workflows, Parallelism |
+
+## Project Structure
+
+```
+pokemon-temporal/
+├── pokemon/          # Shared domain types and data (read-only)
+├── exercises/        # Exercise stubs — implement these!
+│   └── exNN_name/
+│       ├── README.md
+│       ├── *.go          # Stubbed files to complete
+│       ├── *_test.go     # Pre-written tests
+│       └── worker/       # Worker main (some exercises)
+└── solutions/        # Reference implementations
+    └── exNN_name/
+```

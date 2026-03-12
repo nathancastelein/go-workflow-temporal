@@ -1,0 +1,27 @@
+package ex03_determinism
+
+import (
+	"testing"
+
+	"github.com/nathancastelein/go-workflow-temporal/pokemon"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.temporal.io/sdk/testsuite"
+)
+
+func TestDodgeCheckActivity_ReturnsBool(t *testing.T) {
+	// Arrange
+	testSuite := &testsuite.WorkflowTestSuite{}
+	activityEnv := testSuite.NewTestActivityEnvironment()
+	activityEnv.RegisterActivity(DodgeCheckActivity)
+	p := pokemon.Pokemon{Name: "Pikachu", Type: "Electric", HP: 35, MaxHP: 35}
+
+	// Act
+	encodedResult, err := activityEnv.ExecuteActivity(DodgeCheckActivity, p)
+
+	// Assert
+	require.NoError(t, err)
+	var result bool
+	require.NoError(t, encodedResult.Get(&result))
+	assert.IsType(t, true, result)
+}
