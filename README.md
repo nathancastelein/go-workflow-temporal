@@ -73,12 +73,13 @@ go run ./examples/helloworld/starter/
 |---|------|----------|
 | 1 | Tall Grass Encounter | Workflow, Activity, Worker |
 | 2 | I Choose You! | Multiple activities, Data passing |
-| 3 | It Dodged! | Determinism |
+| 3 | It Fled! | Determinism |
 | 4 | The Pokeball Missed! | Error handling, Retries, Timeouts |
 | 5 | Testing Your Pokemon | Temporal test framework |
 | 6 | Evolution Chamber | Signals, Timers, Selectors |
-| 7 | Team Rocket is Watching | Interceptors |
-| 8 | Pokemon League Tournament | Child workflows, Parallelism |
+| 7 | Pokemon Journey | Queries |
+| 8 | Team Rocket is Watching | Interceptors |
+| 9 | Pokemon League Tournament | Child workflows, Parallelism |
 
 ## Project Structure
 

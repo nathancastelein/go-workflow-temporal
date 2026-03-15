@@ -38,6 +38,9 @@ var TrainerTeams = map[string]Pokemon{
 	"James":    {Name: "Gastly", Type: "Ghost", HP: 30, MaxHP: 30},
 	"Sabrina":  {Name: "Machop", Type: "Fighting", HP: 70, MaxHP: 70},
 	"Giovanni": {Name: "Snorlax", Type: "Normal", HP: 160, MaxHP: 160},
+	"Lorelei":  {Name: "Squirtle", Type: "Water", HP: 44, MaxHP: 44},
+	"Bruno":    {Name: "Machop", Type: "Fighting", HP: 70, MaxHP: 70},
+	"Agatha":   {Name: "Gastly", Type: "Ghost", HP: 30, MaxHP: 30},
 	"Lance":    {Name: "Charmander", Type: "Fire", HP: 39, MaxHP: 39},
 	"Cynthia":  {Name: "Bulbasaur", Type: "Grass", HP: 45, MaxHP: 45},
 }

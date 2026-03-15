@@ -23,7 +23,7 @@ func TestCapturePokemonWorkflow_SuccessAfterRetries(t *testing.T) {
 
 	env.RegisterWorkflow(CapturePokemonWorkflow)
 	env.OnActivity(EncounterWildPokemonActivity, mock.Anything).Return(wildPokemon, nil)
-	env.OnActivity(DodgeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
+	env.OnActivity(FleeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
 	env.OnActivity(ChoosePokemonActivity, mock.Anything, "Ash").Return(trainerPokemon, nil)
 	env.OnActivity(WeakenActivity, mock.Anything, trainerPokemon, wildPokemon).Return(weakenedPokemon, nil)
 	env.OnActivity(ThrowPokeballActivity, mock.Anything, weakenedPokemon).Return(captureResult, nil)
@@ -52,7 +52,7 @@ func TestCapturePokemonWorkflow_PokemonFlees(t *testing.T) {
 
 	env.RegisterWorkflow(CapturePokemonWorkflow)
 	env.OnActivity(EncounterWildPokemonActivity, mock.Anything).Return(wildPokemon, nil)
-	env.OnActivity(DodgeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
+	env.OnActivity(FleeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
 	env.OnActivity(ChoosePokemonActivity, mock.Anything, "Ash").Return(trainerPokemon, nil)
 	env.OnActivity(WeakenActivity, mock.Anything, trainerPokemon, wildPokemon).Return(weakenedPokemon, nil)
 	env.OnActivity(ThrowPokeballActivity, mock.Anything, weakenedPokemon).Return(
@@ -85,7 +85,7 @@ func TestCapturePokemonWorkflow_PokedexRegistration(t *testing.T) {
 
 	env.RegisterWorkflow(CapturePokemonWorkflow)
 	env.OnActivity(EncounterWildPokemonActivity, mock.Anything).Return(wildPokemon, nil)
-	env.OnActivity(DodgeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
+	env.OnActivity(FleeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
 	env.OnActivity(ChoosePokemonActivity, mock.Anything, "Ash").Return(trainerPokemon, nil)
 	env.OnActivity(WeakenActivity, mock.Anything, trainerPokemon, wildPokemon).Return(weakenedPokemon, nil)
 	env.OnActivity(ThrowPokeballActivity, mock.Anything, weakenedPokemon).Return(captureResult, nil)
@@ -116,7 +116,7 @@ func TestCapturePokemonWorkflow_SuccessWithDifferentTrainer(t *testing.T) {
 
 	env.RegisterWorkflow(CapturePokemonWorkflow)
 	env.OnActivity(EncounterWildPokemonActivity, mock.Anything).Return(wildPokemon, nil)
-	env.OnActivity(DodgeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
+	env.OnActivity(FleeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
 	env.OnActivity(ChoosePokemonActivity, mock.Anything, "Misty").Return(trainerPokemon, nil)
 	env.OnActivity(WeakenActivity, mock.Anything, trainerPokemon, wildPokemon).Return(weakenedPokemon, nil)
 	// Simulate pokeball missing then succeeding

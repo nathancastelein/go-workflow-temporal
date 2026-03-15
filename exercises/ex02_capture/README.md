@@ -1,27 +1,28 @@
-# Exercise 2 — I Choose You!
+# Exercise 2 - I Choose You!
 
 ## Concepts
 
 In this exercise, you will learn how to:
 
 - Chain **multiple activities** in a workflow
-- Pass **data between activities** — the output of one activity becomes the input of the next
+- Pass **data between activities** - the output of one activity becomes the input of the next
 - Configure **activity options** that apply to all activities in a workflow
 
 ## What to implement
 
 ### Activities (`activities.go`)
 
-Implement 4 activities:
+`EncounterWildPokemonActivity` is already provided from Exercise 1.
 
-1. **`EncounterWildPokemonActivity`** — picks a random Pokemon from `pokemon.AllPokemon`
-2. **`ChoosePokemonActivity(trainerName)`** — looks up the trainer's Pokemon in `pokemon.TrainerTeams`. Returns an error if the trainer is unknown.
-3. **`WeakenActivity(attacker, target)`** — reduces `target.HP` by `attacker.HP / 3`. Clamp HP to a minimum of 1.
-4. **`ThrowPokeballActivity(target)`** — capture probability is `1.0 - (target.HP / target.MaxHP)`. Use `rand.Float64()` to decide success. Returns a `pokemon.CaptureResult`.
+Implement 3 activities:
+
+1. **`ChoosePokemonActivity(trainerName)`** - looks up the trainer's Pokemon in `pokemon.TrainerTeams`. Returns an error if the trainer is unknown.
+2. **`WeakenActivity(attacker, target)`** - reduces `target.HP` by `attacker.HP / 3`. Clamp HP to a minimum of 1.
+3. **`ThrowPokeballActivity(target)`** - capture probability is `1.0 - (target.HP / target.MaxHP)`. Returns a `pokemon.CaptureResult`.
 
 ### Workflow (`workflow.go`)
 
-Implement `CapturePokemonWorkflow(trainerName)` — it should:
+Implement `CapturePokemonWorkflow(trainerName)` - it should:
 
 1. Create activity options with a `StartToCloseTimeout` of 10 seconds
 2. Encounter a wild Pokemon

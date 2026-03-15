@@ -36,7 +36,7 @@ func TestWeakenActivity_ClampsToMinimum1(t *testing.T) {
 	activityEnv := testSuite.NewTestActivityEnvironment()
 	activityEnv.RegisterActivity(WeakenActivity)
 
-	attacker := pokemon.Pokemon{Name: "Snorlax", Type: "Normal", HP: 300, MaxHP: 300}
+	attacker := pokemon.Pokemon{Name: "Mewtwo", Type: "Psy", HP: 300, MaxHP: 300}
 	target := pokemon.Pokemon{Name: "Gastly", Type: "Ghost", HP: 10, MaxHP: 30}
 
 	// Act

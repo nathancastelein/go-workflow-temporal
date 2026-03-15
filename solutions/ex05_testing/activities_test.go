@@ -4,33 +4,39 @@ import (
 	"testing"
 
 	"github.com/nathancastelein/go-workflow-temporal/pokemon"
-	"github.com/stretchr/testify/suite"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/testsuite"
 )
 
-type ActivityTestSuite struct {
-	suite.Suite
-	testsuite.WorkflowTestSuite
-}
-
-func TestActivitySuite(t *testing.T) {
-	suite.Run(t, new(ActivityTestSuite))
-}
-
-func (s *ActivityTestSuite) TestEncounterWildPokemonActivity_ReturnsValidPokemon() {
+func TestFetchPokemonActivity_KnownPokemon(t *testing.T) {
 	// Arrange
-	activityEnv := s.NewTestActivityEnvironment()
-	activityEnv.RegisterActivity(EncounterWildPokemonActivity)
+	testSuite := &testsuite.WorkflowTestSuite{}
+	activityEnv := testSuite.NewTestActivityEnvironment()
+	activityEnv.RegisterActivity(FetchPokemonActivity)
 
 	// Act
-	encodedResult, err := activityEnv.ExecuteActivity(EncounterWildPokemonActivity)
+	encodedResult, err := activityEnv.ExecuteActivity(FetchPokemonActivity, "Pikachu")
 
 	// Assert
-	s.NoError(err)
+	require.NoError(t, err)
 	var result pokemon.Pokemon
-	s.NoError(encodedResult.Get(&result))
-	s.NotEmpty(result.Name)
-	s.NotEmpty(result.Type)
-	s.Greater(result.HP, 0)
-	s.Greater(result.MaxHP, 0)
+	require.NoError(t, encodedResult.Get(&result))
+	assert.Equal(t, "Pikachu", result.Name)
+	assert.Equal(t, "Electric", result.Type)
+	assert.Equal(t, 35, result.HP)
+	assert.Equal(t, 35, result.MaxHP)
+}
+
+func TestFetchPokemonActivity_UnknownPokemon(t *testing.T) {
+	// Arrange
+	testSuite := &testsuite.WorkflowTestSuite{}
+	activityEnv := testSuite.NewTestActivityEnvironment()
+	activityEnv.RegisterActivity(FetchPokemonActivity)
+
+	// Act
+	_, err := activityEnv.ExecuteActivity(FetchPokemonActivity, "MissingNo")
+
+	// Assert
+	assert.Error(t, err)
 }

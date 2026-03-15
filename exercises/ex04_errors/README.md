@@ -1,4 +1,4 @@
-# Exercise 4 — The Pokeball Missed! (Error Handling)
+# Exercise 4 - The Pokeball Missed! (Error Handling)
 
 ## Concepts
 
@@ -25,7 +25,7 @@ ao := workflow.ActivityOptions{
 
 ### Non-Retryable Errors
 
-Sometimes an error is permanent — retrying won't help. Use `temporal.NewNonRetryableApplicationError` to stop retries immediately:
+Sometimes an error is permanent - retrying won't help. Use `temporal.NewNonRetryableApplicationError` to stop retries immediately:
 
 ```go
 return temporal.NewNonRetryableApplicationError("pokemon fled", "PokemonFled", nil)
@@ -71,30 +71,29 @@ attempt := info.Attempt // 1 for first attempt, 2 for first retry, etc.
 
 ### Activities (`activities.go`)
 
-Implement the same activities as Exercise 3, plus:
+The activities from Exercise 3 are already provided (`EncounterWildPokemonActivity`, `ChoosePokemonActivity`, `WeakenActivity`, `FleeCheckActivity`). Note that `ThrowPokeballActivity` has been replaced with a new version for this exercise.
 
-- **`ThrowPokeballActivity`** — simulates unreliability:
-  - Attempt < 2: return error `"pokeball missed"` (retryable)
-  - Attempt >= 3 and capture would fail: return `temporal.NewNonRetryableApplicationError("pokemon fled", "PokemonFled", nil)`
-  - Otherwise: return `CaptureResult` based on HP ratio probability
+Implement 2 new activities:
 
-- **`PokedexClient.RegisterInPokedexActivity`** — simulates unreliable API:
-  - Attempt < 3: return retryable error
+- **`ThrowPokeballActivity`** - simulates unreliability using the attempt number:
+  - Attempt < 2: return a retryable error ("pokeball missed")
+  - Attempt >= 3 and capture would fail: return a non-retryable error (the pokemon fled)
+  - Otherwise: return a `CaptureResult` based on HP ratio probability
+
+- **`PokedexClient.RegisterInPokedexActivity`** - simulates an unreliable API:
+  - Attempt < 3: return a retryable error
   - Attempt >= 3: succeed
 
 ### Workflow (`workflow.go`)
 
-Implement `CapturePokemonWorkflow(ctx, trainerName)`:
+The base capture flow from Exercise 3 is already pre-filled (encounter, flee check, choose, weaken, throw). You only need to add error handling:
 
-1. Default activity options: `StartToCloseTimeout` 10s
-2. Call encounter, dodge check, choose, weaken as before
-3. For `ThrowPokeballActivity`: use `RetryPolicy{MaximumAttempts: 3, InitialInterval: 1s, BackoffCoefficient: 2.0}`
-4. If throw fails (non-retryable error), return `CaptureResult{Success: false, Pokemon: weakened}`
-5. If capture succeeds, call `RegisterInPokedexActivity` with:
+1. For `ThrowPokeballActivity` (Step 5): create separate activity options with a `RetryPolicy{MaximumAttempts: 3, InitialInterval: 1s, BackoffCoefficient: 2.0}`
+2. If throw fails (non-retryable error = pokemon fled), return `CaptureResult{Success: false, Pokemon: weakened}`
+3. If capture succeeds, call `RegisterInPokedexActivity` with its own activity options:
    - `StartToCloseTimeout: 5s`
    - `ScheduleToCloseTimeout: 30s`
    - `RetryPolicy{MaximumAttempts: 5, InitialInterval: 1s, BackoffCoefficient: 2.0}`
-6. Return the `CaptureResult`
 
 ## How to test
 

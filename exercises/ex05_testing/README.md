@@ -1,83 +1,82 @@
-# Exercise 5 - Testing Your Pokemon
+# Exercise 5 - Testing Pokemon Evolution
 
 In this exercise, you will write tests for a Temporal workflow using the Temporal test framework. The workflow and activity code is already provided -- your job is to write the tests!
 
 ## The Temporal Test Framework
 
-Temporal provides a test framework built on top of `testify/suite` that lets you test workflows without running a Temporal server.
+Temporal provides a test framework that lets you test workflows without running a Temporal server.
 
 ### Key Components
 
-**WorkflowTestSuite**: The base test suite that provides a `TestWorkflowEnvironment`.
+**TestWorkflowEnvironment**: A simulated Temporal environment where you can mock activities, execute workflows, and assert results.
 
 ```go
-type WorkflowTestSuite struct {
-    suite.Suite
-    testsuite.WorkflowTestSuite
-    env *testsuite.TestWorkflowEnvironment
-}
+testSuite := &testsuite.WorkflowTestSuite{}
+env := testSuite.NewTestWorkflowEnvironment()
 ```
-
-**TestWorkflowEnvironment**: A simulated Temporal environment where you can:
-- Mock activities
-- Execute workflows
-- Assert results
 
 ### Mocking Activities
 
 Use `env.OnActivity()` to mock activity behavior:
 
 ```go
-s.env.OnActivity(MyActivity, mock.Anything, arg1, arg2).Return(result, nil)
+env.OnActivity(MyActivity, mock.Anything, arg1, arg2).Return(result, nil)
 ```
 
 - `mock.Anything` is used for the `context.Context` parameter (first argument)
 - Following arguments should match what the workflow passes
 - `.Return(value, error)` sets the mock return values
 
-### Verifying Call Counts
-
-Use `.Times(N)` to assert an activity is called exactly N times:
-
-```go
-s.env.OnActivity(MyActivity, mock.Anything).Return(result, nil).Times(1)
-```
-
-The `AfterTest` method calls `env.AssertExpectations(s.T())` which verifies all mock expectations were met.
-
 ### Executing and Checking Workflows
 
 ```go
 // Execute the workflow
-s.env.ExecuteWorkflow(MyWorkflow, arg1, arg2)
+env.ExecuteWorkflow(MyWorkflow, arg1, arg2)
 
 // Check completion
-s.True(s.env.IsWorkflowCompleted())
-s.NoError(s.env.GetWorkflowError())
+require.True(t, env.IsWorkflowCompleted())
+require.NoError(t, env.GetWorkflowError())
 
 // Get the result
 var result MyResultType
-s.NoError(s.env.GetWorkflowResult(&result))
+require.NoError(t, env.GetWorkflowResult(&result))
 ```
 
-### Direct Activity Tests
+### Testing Activities in Isolation
 
-You can also test activities directly without the test environment:
+To test activities without a workflow, use `NewTestActivityEnvironment`:
 
 ```go
-result, err := MyActivity(nil, arg1)
-s.NoError(err)
-s.NotEmpty(result.Name)
+testSuite := &testsuite.WorkflowTestSuite{}
+activityEnv := testSuite.NewTestActivityEnvironment()
+activityEnv.RegisterActivity(MyActivity)
+
+// Execute the activity
+encodedResult, err := activityEnv.ExecuteActivity(MyActivity, arg1, arg2)
+
+// Decode and assert the result
+require.NoError(t, err)
+var result MyResultType
+require.NoError(t, encodedResult.Get(&result))
 ```
 
 ## Your Task
 
-Open `workflow_test.go` and implement the five test methods. Each has TODO comments with hints.
+The `EvolvePokemonWorkflow` orchestrates 3 activities:
+1. `FetchPokemonActivity` - fetches a Pokemon by name
+2. `CheckEvolutionActivity` - checks if the Pokemon can evolve
+3. `EvolvePokemonActivity` - performs the evolution
+
+Write the following tests:
+
+- **`workflow_test.go`**: `TestWorkflow_SuccessfulEvolution` - mock all 3 activities for a successful Pikachu → Raichu evolution
+- **`activities_test.go`**: `TestFetchPokemonActivity_KnownPokemon` - test with a known name, assert the correct Pokemon is returned
+- **`activities_test.go`**: `TestFetchPokemonActivity_UnknownPokemon` - test with an unknown name, assert an error is returned
 
 ## Validate
 
-Run from the project root:
+Run from the exercise directory:
 
 ```bash
-bash exercises/ex05_testing/validate.sh
+go test .
 ```

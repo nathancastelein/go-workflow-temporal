@@ -1,60 +1,48 @@
-# Exercise 3 — It Dodged! (Determinism)
+# Exercise 3 - It Fled! (Determinism)
 
 ## Concepts
 
-In this exercise, you will learn about **workflow determinism** — one of the most important rules in Temporal.
+In this exercise, you will learn about **workflow determinism** - one of the most important rules in Temporal.
 
 - **Determinism constraint**: Workflow code must produce the same sequence of commands every time it is replayed. Temporal replays workflows from their event history for recovery, so any non-deterministic operation (random numbers, current time, UUIDs) will cause the replay to diverge.
 - **Activities are the escape hatch**: Since activity results are recorded in the event history, any non-deterministic logic (randomness, I/O, etc.) should live inside activities.
-- **`workflow.SideEffect`**: An alternative for lightweight non-deterministic operations that don't need retry semantics.
 
-## The Trap
+## The Problem
 
-Here is code that **looks correct** but **breaks Temporal determinism**:
+Open `workflow.go` - the workflow from Exercise 2 has been extended with a **flee check**: there's a 30% chance the wild Pokemon flees before you can catch it.
 
-```go
-// DON'T DO THIS — this is non-deterministic!
-func BrokenCapturePokemonWorkflow(ctx workflow.Context, trainerName string) (pokemon.CaptureResult, error) {
-    // Using math/rand directly in a workflow breaks replay determinism
-    dodged := rand.Float64() < 0.3
-    if dodged {
-        return pokemon.CaptureResult{Success: false}, nil
-    }
-    // ...
-}
-```
+But there's a bug! Can you find it?
 
-**Why this breaks**: When Temporal replays the workflow (e.g., after a worker crash), it re-executes the workflow code from the beginning. The `rand.Float64()` call will return a **different value** on replay, which means the workflow might take a different code path than it originally did. This causes a **non-determinism error** and the workflow gets stuck.
-
-**The fix**: Move the randomness into an activity (`DodgeCheckActivity`). Activity results are recorded in the event history, so on replay Temporal uses the recorded result instead of re-executing the activity code.
+**Why this breaks**: When Temporal replays the workflow (e.g., after a worker restart), it re-executes the workflow code from the beginning. The `rand.Float64()` call will return a **different value** on replay, which means the workflow might take a different code path than it originally did. This causes a **non-determinism error** and the workflow gets stuck.
 
 ## What to implement
 
-### Activities (`activities.go`)
+### Part 1: Implement `FleeCheckActivity` (`activities.go`)
 
-Implement 5 activities:
+The activities from Exercise 2 are already provided.
 
-1. **`EncounterWildPokemonActivity`** — picks a random Pokemon from `pokemon.AllPokemon`
-2. **`ChoosePokemonActivity`** — looks up the trainer's Pokemon from `pokemon.TrainerTeams`
-3. **`WeakenActivity`** — reduces target HP by `attacker.HP / 3`, clamp min 1
-4. **`ThrowPokeballActivity`** — capture probability based on HP ratio: `1.0 - (target.HP / target.MaxHP)`
-5. **`DodgeCheckActivity`** — returns `true` ~30% of the time using `rand.Float64() < 0.3`
+Create a new activity to safely encapsulate the randomness:
 
-### Workflow (`workflow.go`)
+1. **`FleeCheckActivity`** - returns `true` ~30% of the time using `rand.Float64() < 0.3`
 
-Implement `CapturePokemonWorkflow(ctx, trainerName)`:
+### Part 2: Fix the workflow (`workflow.go`)
 
-1. Set activity options with `StartToCloseTimeout` of 10 seconds
-2. Call `EncounterWildPokemonActivity` to encounter a wild Pokemon
-3. Call `DodgeCheckActivity` — if the Pokemon dodged, return `CaptureResult{Success: false, Pokemon: wild}`
-4. If not dodged: call `ChoosePokemonActivity`, `WeakenActivity`, `ThrowPokeballActivity`
-5. Return the `CaptureResult`
+Replace the non-deterministic `rand.Float64()` call with a call to your new `FleeCheckActivity`.
+
+The fixed workflow should:
+
+1. Encounter a wild Pokemon
+2. Call `FleeCheckActivity` - if the Pokemon fled, return `CaptureResult{Success: false, Pokemon: wild}`
+3. If not fled: call `ChoosePokemonActivity`, `WeakenActivity`, `ThrowPokeballActivity`
+4. Return the `CaptureResult`
 
 ## How to test
 
 ```bash
 go test ./exercises/ex03_determinism/...
 ```
+
+The tests mock `FleeCheckActivity` - they will fail until you fix the workflow to use the activity instead of `rand.Float64()`.
 
 ## How to run
 

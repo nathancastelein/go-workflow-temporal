@@ -10,7 +10,7 @@ import (
 	"go.temporal.io/sdk/testsuite"
 )
 
-func TestCapturePokemonWorkflow_PokemonDodges(t *testing.T) {
+func TestCapturePokemonWorkflow_PokemonFlees(t *testing.T) {
 	// Arrange
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
@@ -19,9 +19,9 @@ func TestCapturePokemonWorkflow_PokemonDodges(t *testing.T) {
 
 	env.RegisterWorkflow(CapturePokemonWorkflow)
 	env.OnActivity(EncounterWildPokemonActivity, mock.Anything).Return(wildPokemon, nil)
-	env.OnActivity(DodgeCheckActivity, mock.Anything, wildPokemon).Return(true, nil)
-	// WeakenActivity and ThrowPokeballActivity are NOT mocked — if the workflow
-	// calls them, the test will fail, proving the dodge short-circuits correctly.
+	env.OnActivity(FleeCheckActivity, mock.Anything, wildPokemon).Return(true, nil)
+	// WeakenActivity and ThrowPokeballActivity are NOT mocked - if the workflow
+	// calls them, the test will fail, proving the flee short-circuits correctly.
 
 	// Act
 	env.ExecuteWorkflow(CapturePokemonWorkflow, "Ash")
@@ -36,7 +36,7 @@ func TestCapturePokemonWorkflow_PokemonDodges(t *testing.T) {
 	assert.Equal(t, wildPokemon, result.Pokemon)
 }
 
-func TestCapturePokemonWorkflow_NoDodge_SuccessfulCapture(t *testing.T) {
+func TestCapturePokemonWorkflow_NoFlee_SuccessfulCapture(t *testing.T) {
 	// Arrange
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
@@ -48,7 +48,7 @@ func TestCapturePokemonWorkflow_NoDodge_SuccessfulCapture(t *testing.T) {
 
 	env.RegisterWorkflow(CapturePokemonWorkflow)
 	env.OnActivity(EncounterWildPokemonActivity, mock.Anything).Return(wildPokemon, nil)
-	env.OnActivity(DodgeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
+	env.OnActivity(FleeCheckActivity, mock.Anything, wildPokemon).Return(false, nil)
 	env.OnActivity(ChoosePokemonActivity, mock.Anything, "Ash").Return(trainerPokemon, nil)
 	env.OnActivity(WeakenActivity, mock.Anything, trainerPokemon, wildPokemon).Return(weakenedPokemon, nil)
 	env.OnActivity(ThrowPokeballActivity, mock.Anything, weakenedPokemon).Return(expectedResult, nil)

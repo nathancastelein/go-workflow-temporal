@@ -33,22 +33,17 @@ func WeakenActivity(ctx context.Context, attacker pokemon.Pokemon, target pokemo
 	return target, nil
 }
 
-// DodgeCheckActivity returns true approximately 30% of the time.
+// FleeCheckActivity returns true approximately 30% of the time.
 // This randomness is safe because it runs inside an activity, not a workflow.
-func DodgeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
+func FleeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
 	return rand.Float64() < 0.3, nil
 }
 
 // ThrowPokeballActivity attempts to capture the target Pokemon.
-// It simulates unreliability using activity.GetInfo(ctx).Attempt:
-//   - If attempt < 2: return a retryable error ("pokeball missed")
-//   - If attempt >= 3 and capture would fail: return a non-retryable error
-//     using temporal.NewNonRetryableApplicationError("pokemon fled", "PokemonFled", nil)
-//   - Otherwise: return CaptureResult based on HP ratio probability
-//
-// TODO: Implement the attempt-based retry logic described above.
-// Hint: Use activity.GetInfo(ctx).Attempt to get the current attempt number.
-// Hint: Use temporal.NewNonRetryableApplicationError for non-retryable errors.
+// TODO: Simulate unreliability based on the current attempt number:
+//   - Attempt < 2: return a retryable error ("pokeball missed")
+//   - Attempt >= 3 and capture would fail: return a non-retryable error (pokemon fled)
+//   - Otherwise: return CaptureResult based on HP ratio probability (1.0 - target.HP/target.MaxHP)
 func ThrowPokeballActivity(ctx context.Context, target pokemon.Pokemon) (pokemon.CaptureResult, error) {
 	return pokemon.CaptureResult{}, nil
 }
@@ -57,14 +52,9 @@ func ThrowPokeballActivity(ctx context.Context, target pokemon.Pokemon) (pokemon
 type PokedexClient struct{}
 
 // RegisterInPokedexActivity registers a captured Pokemon in the Pokedex.
-// It simulates an unreliable API using activity.GetInfo(ctx).Attempt:
-//   - If attempt < 3: return a retryable error
-//   - If attempt >= 3: succeed
-//
-// TODO: Implement the attempt-based retry logic.
-// This activity uses a struct receiver so it must be registered with:
-//
-//	w.RegisterActivity(&PokedexClient{})
+// TODO: Simulate an unreliable API:
+//   - Attempt < 3: return a retryable error
+//   - Attempt >= 3: succeed
 func (c *PokedexClient) RegisterInPokedexActivity(ctx context.Context, p pokemon.Pokemon) error {
 	return nil
 }

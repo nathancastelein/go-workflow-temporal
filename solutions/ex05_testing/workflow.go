@@ -4,63 +4,37 @@ import (
 	"time"
 
 	"github.com/nathancastelein/go-workflow-temporal/pokemon"
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
-// CapturePokemonWorkflow orchestrates the full capture sequence with dodge check and retry.
-func CapturePokemonWorkflow(ctx workflow.Context, trainerName string) (pokemon.CaptureResult, error) {
+// EvolvePokemonWorkflow orchestrates the evolution of a Pokemon.
+// It fetches the Pokemon, checks if it can evolve, and performs the evolution.
+func EvolvePokemonWorkflow(ctx workflow.Context, pokemonName string) (pokemon.EvolutionResult, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	// Step 1: Encounter a wild Pokemon
-	var wildPokemon pokemon.Pokemon
-	err := workflow.ExecuteActivity(ctx, EncounterWildPokemonActivity).Get(ctx, &wildPokemon)
+	// Step 1: Fetch the Pokemon by name
+	var p pokemon.Pokemon
+	err := workflow.ExecuteActivity(ctx, FetchPokemonActivity, pokemonName).Get(ctx, &p)
 	if err != nil {
-		return pokemon.CaptureResult{}, err
+		return pokemon.EvolutionResult{}, err
 	}
 
-	// Step 2: Check if the wild Pokemon dodges
-	var dodged bool
-	err = workflow.ExecuteActivity(ctx, DodgeCheckActivity, wildPokemon).Get(ctx, &dodged)
+	// Step 2: Check if the Pokemon can evolve
+	var evolvedName string
+	err = workflow.ExecuteActivity(ctx, CheckEvolutionActivity, p).Get(ctx, &evolvedName)
 	if err != nil {
-		return pokemon.CaptureResult{}, err
-	}
-	if dodged {
-		return pokemon.CaptureResult{Success: false, Pokemon: wildPokemon}, nil
+		return pokemon.EvolutionResult{}, err
 	}
 
-	// Step 3: Choose the trainer's Pokemon
-	var trainerPokemon pokemon.Pokemon
-	err = workflow.ExecuteActivity(ctx, ChoosePokemonActivity, trainerName).Get(ctx, &trainerPokemon)
+	// Step 3: Perform the evolution
+	var result pokemon.EvolutionResult
+	err = workflow.ExecuteActivity(ctx, EvolvePokemonActivity, p, evolvedName).Get(ctx, &result)
 	if err != nil {
-		return pokemon.CaptureResult{}, err
+		return pokemon.EvolutionResult{}, err
 	}
 
-	// Step 4: Weaken the wild Pokemon
-	var weakenedPokemon pokemon.Pokemon
-	err = workflow.ExecuteActivity(ctx, WeakenActivity, trainerPokemon, wildPokemon).Get(ctx, &weakenedPokemon)
-	if err != nil {
-		return pokemon.CaptureResult{}, err
-	}
-
-	// Step 5: Throw a Pokeball with retry policy
-	throwCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
-		RetryPolicy: &temporal.RetryPolicy{
-			MaximumAttempts:    3,
-			InitialInterval:    time.Second,
-			BackoffCoefficient: 2.0,
-		},
-	})
-
-	var captureResult pokemon.CaptureResult
-	err = workflow.ExecuteActivity(throwCtx, ThrowPokeballActivity, weakenedPokemon).Get(ctx, &captureResult)
-	if err != nil {
-		return pokemon.CaptureResult{}, err
-	}
-
-	return captureResult, nil
+	return result, nil
 }

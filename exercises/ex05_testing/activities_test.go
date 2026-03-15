@@ -2,31 +2,18 @@ package ex05_testing
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/suite"
-	"go.temporal.io/sdk/testsuite"
 )
 
-type ActivityTestSuite struct {
-	suite.Suite
-	testsuite.WorkflowTestSuite
+func TestFetchPokemonActivity_KnownPokemon(t *testing.T) {
+	// TODO: Create a test activity environment using testsuite.WorkflowTestSuite{}
+	// TODO: Register and execute FetchPokemonActivity with a known Pokemon name (e.g. "Pikachu")
+	// TODO: Assert no error and the returned Pokemon has the correct name, type, and HP
+	t.Fatal("implement this test")
 }
 
-func TestActivitySuite(t *testing.T) {
-	suite.Run(t, new(ActivityTestSuite))
-}
-
-func (s *ActivityTestSuite) TestEncounterWildPokemonActivity_ReturnsValidPokemon() {
-	// TODO: Create a test activity environment
-	//   activityEnv := s.NewTestActivityEnvironment()
-	//   activityEnv.RegisterActivity(EncounterWildPokemonActivity)
-	// TODO: Execute the activity
-	//   encodedResult, err := activityEnv.ExecuteActivity(EncounterWildPokemonActivity)
-	// TODO: Assert no error
-	//   s.NoError(err)
-	// TODO: Decode and assert the returned Pokemon has a non-empty name
-	//   var result pokemon.Pokemon
-	//   s.NoError(encodedResult.Get(&result))
-	//   s.NotEmpty(result.Name)
-	s.Fail("implement this test")
+func TestFetchPokemonActivity_UnknownPokemon(t *testing.T) {
+	// TODO: Create a test activity environment using testsuite.WorkflowTestSuite{}
+	// TODO: Register and execute FetchPokemonActivity with an unknown Pokemon name (e.g. "MissingNo")
+	// TODO: Assert an error is returned
+	t.Fatal("implement this test")
 }

@@ -9,15 +9,15 @@ import (
 	"go.temporal.io/sdk/testsuite"
 )
 
-func TestDodgeCheckActivity_ReturnsBool(t *testing.T) {
+func TestFleeCheckActivity_ReturnsBool(t *testing.T) {
 	// Arrange
 	testSuite := &testsuite.WorkflowTestSuite{}
 	activityEnv := testSuite.NewTestActivityEnvironment()
-	activityEnv.RegisterActivity(DodgeCheckActivity)
+	activityEnv.RegisterActivity(FleeCheckActivity)
 	p := pokemon.Pokemon{Name: "Pikachu", Type: "Electric", HP: 35, MaxHP: 35}
 
 	// Act
-	encodedResult, err := activityEnv.ExecuteActivity(DodgeCheckActivity, p)
+	encodedResult, err := activityEnv.ExecuteActivity(FleeCheckActivity, p)
 
 	// Assert
 	require.NoError(t, err)

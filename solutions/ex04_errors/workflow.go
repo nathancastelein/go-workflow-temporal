@@ -22,14 +22,14 @@ func CapturePokemonWorkflow(ctx workflow.Context, trainerName string) (pokemon.C
 		return pokemon.CaptureResult{}, err
 	}
 
-	// Check if the Pokemon dodges
-	var dodged bool
-	err = workflow.ExecuteActivity(ctx, DodgeCheckActivity, wild).Get(ctx, &dodged)
+	// Check if the Pokemon flees
+	var fled bool
+	err = workflow.ExecuteActivity(ctx, FleeCheckActivity, wild).Get(ctx, &fled)
 	if err != nil {
 		return pokemon.CaptureResult{}, err
 	}
 
-	if dodged {
+	if fled {
 		return pokemon.CaptureResult{Success: false, Pokemon: wild}, nil
 	}
 

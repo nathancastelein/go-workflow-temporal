@@ -44,9 +44,8 @@ func ThrowPokeballActivity(ctx context.Context, target pokemon.Pokemon) (pokemon
 	}, nil
 }
 
-// DodgeCheckActivity returns true approximately 30% of the time.
-// This randomness is safe because it runs inside an activity, not a workflow.
-// TODO: Use rand.Float64() < 0.3 to determine if the Pokemon dodges.
-func DodgeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
+// FleeCheckActivity checks whether the wild Pokemon flees (~30% chance).
+// TODO: Implement the flee check. This randomness is safe inside an activity.
+func FleeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
 	return false, nil
 }

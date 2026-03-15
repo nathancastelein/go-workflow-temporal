@@ -35,8 +35,8 @@ func WeakenActivity(ctx context.Context, attacker pokemon.Pokemon, target pokemo
 	return target, nil
 }
 
-// DodgeCheckActivity returns true approximately 30% of the time.
-func DodgeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
+// FleeCheckActivity returns true approximately 30% of the time.
+func FleeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
 	return rand.Float64() < 0.3, nil
 }
 
@@ -51,15 +51,12 @@ func ThrowPokeballActivity(ctx context.Context, target pokemon.Pokemon) (pokemon
 		return pokemon.CaptureResult{}, fmt.Errorf("pokeball missed")
 	}
 
-	probability := 1.0 - (float64(target.HP) / float64(target.MaxHP))
-	success := rand.Float64() < probability
-
-	if !success && info.Attempt >= 3 {
+	if info.Attempt >= 3 {
 		return pokemon.CaptureResult{}, temporal.NewNonRetryableApplicationError("pokemon fled", "PokemonFled", nil)
 	}
 
 	return pokemon.CaptureResult{
-		Success: success,
+		Success: true,
 		Pokemon: target,
 	}, nil
 }

@@ -22,7 +22,7 @@ func main() {
 	w.RegisterActivity(ex04.EncounterWildPokemonActivity)
 	w.RegisterActivity(ex04.ChoosePokemonActivity)
 	w.RegisterActivity(ex04.WeakenActivity)
-	w.RegisterActivity(ex04.DodgeCheckActivity)
+	w.RegisterActivity(ex04.FleeCheckActivity)
 	w.RegisterActivity(ex04.ThrowPokeballActivity)
 	w.RegisterActivity(&ex04.PokedexClient{})
 

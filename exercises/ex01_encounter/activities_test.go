@@ -26,12 +26,5 @@ func TestEncounterWildPokemonActivity_ReturnsValidPokemon(t *testing.T) {
 	assert.NotEmpty(t, result.Name)
 	assert.Equal(t, result.HP, result.MaxHP)
 
-	found := false
-	for _, p := range pokemon.AllPokemon {
-		if p.Name == result.Name {
-			found = true
-			break
-		}
-	}
-	assert.True(t, found, "Pokemon %s should be in AllPokemon list", result.Name)
+	assert.Contains(t, pokemon.AllPokemon, result)
 }

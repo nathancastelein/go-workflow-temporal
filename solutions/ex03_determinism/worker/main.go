@@ -23,7 +23,7 @@ func main() {
 	w.RegisterActivity(ex03.ChoosePokemonActivity)
 	w.RegisterActivity(ex03.WeakenActivity)
 	w.RegisterActivity(ex03.ThrowPokeballActivity)
-	w.RegisterActivity(ex03.DodgeCheckActivity)
+	w.RegisterActivity(ex03.FleeCheckActivity)
 
 	if err := w.Run(worker.InterruptCh()); err != nil {
 		log.Fatalf("Unable to start worker: %v", err)

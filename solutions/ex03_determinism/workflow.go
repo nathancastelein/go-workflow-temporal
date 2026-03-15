@@ -8,7 +8,7 @@ import (
 )
 
 // CapturePokemonWorkflow orchestrates the capture of a wild Pokemon.
-// It introduces a dodge check: if the wild Pokemon dodges, the capture fails immediately.
+// It introduces a flee check: if the wild Pokemon flees, the capture fails immediately.
 func CapturePokemonWorkflow(ctx workflow.Context, trainerName string) (pokemon.CaptureResult, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
@@ -22,14 +22,14 @@ func CapturePokemonWorkflow(ctx workflow.Context, trainerName string) (pokemon.C
 		return pokemon.CaptureResult{}, err
 	}
 
-	// Check if the Pokemon dodges — this is an activity to preserve determinism
-	var dodged bool
-	err = workflow.ExecuteActivity(ctx, DodgeCheckActivity, wild).Get(ctx, &dodged)
+	// Check if the Pokemon flees — this is an activity to preserve determinism
+	var fled bool
+	err = workflow.ExecuteActivity(ctx, FleeCheckActivity, wild).Get(ctx, &fled)
 	if err != nil {
 		return pokemon.CaptureResult{}, err
 	}
 
-	if dodged {
+	if fled {
 		return pokemon.CaptureResult{Success: false, Pokemon: wild}, nil
 	}
 

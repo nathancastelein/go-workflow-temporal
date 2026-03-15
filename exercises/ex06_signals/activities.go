@@ -6,12 +6,9 @@ import (
 	"github.com/nathancastelein/go-workflow-temporal/pokemon"
 )
 
-// EvolveActivity looks up the evolved form of a Pokemon.
-// If the Pokemon has an evolution, it returns the evolved form.
-// If not, it returns the same Pokemon unchanged.
+// EvolveActivity looks up the evolved form of a Pokemon in pokemon.EvolutionMap.
+// If the Pokemon has an evolution, return it. Otherwise, return the Pokemon unchanged.
+// TODO: Implement the evolution lookup.
 func EvolveActivity(ctx context.Context, p pokemon.Pokemon) (pokemon.Pokemon, error) {
-	// TODO: Look up p.Name in pokemon.EvolutionMap
-	// If found, return the evolved Pokemon
-	// If not found, return the same Pokemon unchanged
 	return pokemon.Pokemon{}, nil
 }

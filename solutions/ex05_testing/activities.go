@@ -3,48 +3,39 @@ package ex05_testing
 import (
 	"context"
 	"fmt"
-	"math/rand"
 
 	"github.com/nathancastelein/go-workflow-temporal/pokemon"
 )
 
-// EncounterWildPokemonActivity picks a random Pokemon from the wild.
-func EncounterWildPokemonActivity(ctx context.Context) (pokemon.Pokemon, error) {
-	p := pokemon.AllPokemon[rand.Intn(len(pokemon.AllPokemon))]
-	return p, nil
+// FetchPokemonActivity looks up a Pokemon by name from AllPokemon.
+func FetchPokemonActivity(ctx context.Context, name string) (pokemon.Pokemon, error) {
+	for _, p := range pokemon.AllPokemon {
+		if p.Name == name {
+			return p, nil
+		}
+	}
+	return pokemon.Pokemon{}, fmt.Errorf("unknown pokemon: %s", name)
 }
 
-// DodgeCheckActivity determines if the wild Pokemon dodges (~30% chance).
-func DodgeCheckActivity(ctx context.Context, p pokemon.Pokemon) (bool, error) {
-	return rand.Float64() < 0.3, nil
-}
-
-// ChoosePokemonActivity returns the trainer's signature Pokemon.
-func ChoosePokemonActivity(ctx context.Context, trainerName string) (pokemon.Pokemon, error) {
-	p, ok := pokemon.TrainerTeams[trainerName]
+// CheckEvolutionActivity checks if the Pokemon has an evolution available.
+// Returns the evolved form's name, or an error if the Pokemon cannot evolve.
+func CheckEvolutionActivity(ctx context.Context, p pokemon.Pokemon) (string, error) {
+	evolved, ok := pokemon.EvolutionMap[p.Name]
 	if !ok {
-		return pokemon.Pokemon{}, fmt.Errorf("unknown trainer: %s", trainerName)
+		return "", fmt.Errorf("%s cannot evolve", p.Name)
 	}
-	return p, nil
+	return evolved.Name, nil
 }
 
-// WeakenActivity reduces the target's HP by attacker.HP/3, clamping to a minimum of 1.
-func WeakenActivity(ctx context.Context, attacker pokemon.Pokemon, target pokemon.Pokemon) (pokemon.Pokemon, error) {
-	damage := attacker.HP / 3
-	target.HP -= damage
-	if target.HP < 1 {
-		target.HP = 1
+// EvolvePokemonActivity performs the evolution and returns the result.
+func EvolvePokemonActivity(ctx context.Context, p pokemon.Pokemon, evolvedName string) (pokemon.EvolutionResult, error) {
+	evolved, ok := pokemon.EvolutionMap[p.Name]
+	if !ok {
+		return pokemon.EvolutionResult{}, fmt.Errorf("no evolution found for %s", p.Name)
 	}
-	return target, nil
-}
-
-// ThrowPokeballActivity attempts to capture the target Pokemon.
-// Capture probability = 1.0 - (target.HP / target.MaxHP).
-func ThrowPokeballActivity(ctx context.Context, target pokemon.Pokemon) (pokemon.CaptureResult, error) {
-	probability := 1.0 - (float64(target.HP) / float64(target.MaxHP))
-	success := rand.Float64() < probability
-	return pokemon.CaptureResult{
-		Success: success,
-		Pokemon: target,
+	return pokemon.EvolutionResult{
+		Pokemon: evolved,
+		Evolved: true,
+		Trigger: "level-up",
 	}, nil
 }
