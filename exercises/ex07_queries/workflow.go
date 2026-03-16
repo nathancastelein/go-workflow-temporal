@@ -13,7 +13,6 @@ func JourneyWorkflow(ctx workflow.Context, trainerName string) (pokemon.CaptureR
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
-	logger := workflow.GetLogger(ctx)
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	// TODO: Create a JourneyProgress variable to track the journey state.

@@ -17,7 +17,7 @@ func TestActivitySuite(t *testing.T) {
 	suite.Run(t, new(ActivityTestSuite))
 }
 
-func (s *ActivityTestSuite) TestEvolveActivity_CharmandertToCharmeleon() {
+func (s *ActivityTestSuite) TestEvolveActivity_CharmanderToCharmeleon() {
 	// Arrange
 	activityEnv := s.NewTestActivityEnvironment()
 	activityEnv.RegisterActivity(EvolveActivity)
