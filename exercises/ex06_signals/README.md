@@ -91,7 +91,7 @@ temporal workflow start \
   --task-queue pokemon \
   --type EvolutionWorkflow \
   --input '{"Name":"Charmander","Type":"Fire","HP":39,"MaxHP":39}' \
-  --input '"120s"'
+  --input '120000000000'
 ```
 
 Send a **feed** signal to trigger evolution immediately:

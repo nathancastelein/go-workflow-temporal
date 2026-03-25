@@ -22,7 +22,14 @@ func CapturePokemonWorkflow(ctx workflow.Context, trainerName string) (pokemon.C
 		return pokemon.CaptureResult{}, err
 	}
 
-	// Check if the Pokemon flees — this is an activity to preserve determinism
+	// Check if the Pokemon flees
+	// Step 1 solution — using workflow.SideEffect:
+	//   var fled bool
+	//   workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
+	//       return rand.Float64() < 0.3
+	//   }).Get(&fled)
+	//
+	// Step 2 solution — using an activity (better observability in the UI):
 	var fled bool
 	err = workflow.ExecuteActivity(ctx, FleeCheckActivity, wild).Get(ctx, &fled)
 	if err != nil {

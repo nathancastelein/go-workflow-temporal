@@ -41,3 +41,24 @@ A `JourneyProgress` struct is already defined in `types.go`. Look for the `TODO`
 ```bash
 go test ./exercises/ex07_queries/...
 ```
+
+## Try it with a real Temporal server
+
+Once your worker is running against a local Temporal server, you can interact with the workflow using the CLI.
+
+Start the workflow (with a long timer so you have time to send signals):
+
+```bash
+temporal workflow start \
+  --task-queue pokemon \
+  --type JourneyWorkflow \
+  --input '"Sacha"'
+```
+
+### Query the result
+
+```bash
+temporal workflow query \
+  --workflow-id <WORKFLOW_ID> \
+  --type progress
+```
